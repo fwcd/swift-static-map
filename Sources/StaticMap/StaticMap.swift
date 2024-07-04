@@ -1,13 +1,14 @@
+import CairoGraphics
 import Utils
 
 public struct StaticMap {
-    public var width: Int
-    public var height: Int
-    public var padding: (Int, Int)
-    public var zoom: UInt8?
-    public var center: GeoCoordinates?
-    public var urlTemplate: String
-    public var tileSize: Int
+    private let width: Int
+    private let height: Int
+    private let padding: (Int, Int)
+    private let zoom: UInt8?
+    private let center: GeoCoordinates?
+    private let urlTemplate: String
+    private let tileSize: Int
 
     public init(
         width: Int = 300,

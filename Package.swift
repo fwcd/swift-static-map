@@ -23,7 +23,7 @@ let package = Package(
         .target(
             name: "StaticMap",
             dependencies: [
-                .product(name: "Graphics", package: "swift-graphics"),
+                .product(name: "CairoGraphics", package: "swift-graphics"),
                 .product(name: "Utils", package: "swift-utils"),
             ]
         ),
