@@ -1,0 +1,29 @@
+name: Build
+
+on:
+  push:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+        - os: 'ubuntu-latest'
+          swift: '5.10'
+
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v3
+    - uses: swift-actions/setup-swift@v2
+      with:
+        swift-version: ${{ matrix.swift }}
+    - name: Install system dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: sudo apt-get update && sudo apt-get install -y libcairo2-dev
+    - name: Install system dependencies (macOS)
+      if: runner.os == 'macOS'
+      run: brew update && brew install pkg-config cairo freetype2
+    - name: Build
+      run: swift build
+    - name: Test
+      run: swift test
