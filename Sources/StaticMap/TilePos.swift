@@ -1,4 +1,5 @@
 import Foundation
+import Geodesy
 import Utils
 
 /// The xy coordinates of a tile.
@@ -10,10 +11,10 @@ struct TilePos: Hashable {
 }
 
 extension TilePos {
-    init(_ coords: GeoCoordinates, zoom: UInt8) {
+    init(_ coords: Coordinates, zoom: UInt8) {
         self.init(
-            x: Int(longitudeToX(coords.longitude, zoom: zoom).rounded(.down)),
-            y: Int(latitudeToY(coords.latitude, zoom: zoom).rounded(.up))
+            x: Int(longitudeToX(coords.longitude.totalDegrees, zoom: zoom).rounded(.down)),
+            y: Int(latitudeToY(coords.latitude.totalDegrees, zoom: zoom).rounded(.up))
         )
     }
 }

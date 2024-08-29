@@ -14,8 +14,9 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/fwcd/swift-utils.git", from: "3.0.18"),
-        .package(url: "https://github.com/fwcd/swift-graphics.git", from: "3.0.2"),
+        .package(url: "https://github.com/fwcd/swift-utils.git", from: "4.0.0"),
+        .package(url: "https://github.com/fwcd/swift-geodesy.git", from: "0.1.0"),
+        .package(url: "https://github.com/fwcd/swift-graphics.git", from: "4.0.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -24,6 +25,7 @@ let package = Package(
             name: "StaticMap",
             dependencies: [
                 .product(name: "CairoGraphics", package: "swift-graphics"),
+                .product(name: "Geodesy", package: "swift-geodesy"),
                 .product(name: "Utils", package: "swift-utils"),
             ]
         ),
