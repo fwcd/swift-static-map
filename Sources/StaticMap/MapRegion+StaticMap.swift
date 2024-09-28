@@ -1,10 +1,10 @@
 import Geodesy
 import Utils
 
-extension TileRegion {
+extension MapRegion {
     init(_ staticMap: StaticMap) {
         let (region, zoom) = staticMap.determineRegionAndZoom()
-        self.init(region, zoom: zoom)
+        self.init(coords: region, zoom: zoom)
     }
 }
 
