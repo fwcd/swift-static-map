@@ -3,25 +3,26 @@ import Geodesy
 import Utils
 
 public struct StaticMap {
-    private let width: Int
-    private let height: Int
-    private let padding: (Int, Int)
-    private let zoom: UInt8?
-    private let center: Coordinates?
-    private let tileProvider: TileProvider
-    private let tileSize: Int
+    let size: Vec2<Int>
+    let padding: Vec2<Int>
+    let zoom: UInt8?
+    let center: Coordinates?
+    let tileProvider: TileProvider
+    let tileSize: Int
+
+    var unpaddedSize: Vec2<Int> {
+        size - (2 * padding)
+    }
 
     public init(
-        width: Int = 300,
-        height: Int = 300,
-        padding: (Int, Int) = (0, 0),
+        size: Vec2<Int> = .init(both: 300),
+        padding: Vec2<Int> = .zero(),
         zoom: UInt8? = nil,
         center: Coordinates? = nil,
         tileProvider: TileProvider = .standard,
         tileSize: Int = 256
     ) {
-        self.width = width
-        self.height = height
+        self.size = size
         self.padding = padding
         self.zoom = zoom
         self.center = center

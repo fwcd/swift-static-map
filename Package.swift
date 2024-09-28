@@ -14,7 +14,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/fwcd/swift-utils.git", from: "4.0.0"),
+        .package(url: "https://github.com/fwcd/swift-utils.git", from: "4.1.1"),
         .package(url: "https://github.com/fwcd/swift-geodesy.git", from: "0.2.8"),
         .package(url: "https://github.com/fwcd/swift-graphics.git", from: "4.0.0"),
     ],

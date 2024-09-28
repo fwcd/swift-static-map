@@ -1,5 +1,5 @@
 {
-  "originHash" : "6fda7c07795399a0918c0c71323e6182b953874de9051bd808fdc73298b99ce1",
+  "originHash" : "1bf12c4ae085625f3b808e20222fec7ce1ab79ae2bf17fef6e84e4ea6507053e",
   "pins" : [
     {
       "identity" : "swift-cairo",
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/fwcd/swift-utils.git",
       "state" : {
-        "revision" : "12e4cb20ae4c4d4339c670bbf4ab72e8c3981fcc",
-        "version" : "4.0.0"
+        "revision" : "ad5fd321d30f72abf37a5f42cbac71d261e2d783",
+        "version" : "4.1.1"
       }
     },
     {
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/scinfu/SwiftSoup.git",
       "state" : {
-        "revision" : "028487d4a8a291b2fe1b4392b5425b6172056148",
-        "version" : "2.7.2"
+        "revision" : "3c2c7e1e72b8abd96eafbae80323c5c1e5317437",
+        "version" : "2.7.5"
       }
     },
     {
