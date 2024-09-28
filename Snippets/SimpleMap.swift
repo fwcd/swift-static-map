@@ -12,4 +12,4 @@ let outputPath = CommandLine.arguments[1]
 let staticMap = StaticMap(center: .init(latitude: 60, longitude: 4))
 let image = try await staticMap.render()
 
-try image.pngEncoded().write(to: URL(filePath: outputPath))
+try image.pngEncoded().write(to: URL(fileURLWithPath: outputPath))
