@@ -1,5 +1,5 @@
 {
-  "originHash" : "f3a4a312cfb7afc763cf9442edb4a5e0d6bc63ce9ca82c8d7728ddae1a6acaaf",
+  "originHash" : "6fda7c07795399a0918c0c71323e6182b953874de9051bd808fdc73298b99ce1",
   "pins" : [
     {
       "identity" : "swift-cairo",
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/fwcd/swift-geodesy.git",
       "state" : {
-        "revision" : "eed981625480bfb95406eeed278c1660ddc55d76",
-        "version" : "0.2.7"
+        "revision" : "1eae39a90ff057da486681d4a194d13b0139fa08",
+        "version" : "0.2.8"
       }
     },
     {
