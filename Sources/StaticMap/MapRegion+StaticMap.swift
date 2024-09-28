@@ -3,54 +3,45 @@ import Utils
 
 extension MapRegion {
     init(_ staticMap: StaticMap) {
-        let (region, zoom) = staticMap.determineRegionAndZoom()
-        self.init(coords: region, zoom: zoom)
+        self = staticMap.mapRegion
     }
 }
 
 // Based on https://github.com/danielalvsaaker/staticmap/blob/df88e254be2d929e83ff356c40f9d034a1ed26eb/src/bounds.rs#L152-L205
 
 extension StaticMap {
-    fileprivate func determineRegionAndZoom() -> (CoordinateRegion, UInt8) {
-        zoom.map { (determineExtent(zoom: $0), $0) } ?? inferRegionAndZoom()
+    fileprivate var mapRegion: MapRegion {
+        zoom.map { computeMapRegion(zoom: $0) } ?? inferMapRegion()
     }
 
-    private func inferRegionAndZoom() -> (CoordinateRegion, UInt8) {
+    /// Infers a map region by computing a zoom level.
+    private func inferMapRegion() -> MapRegion {
         let unpaddedSize = unpaddedSize.asDouble
-        var region: CoordinateRegion!
-        var zoom: UInt8 = 1
 
         for z in (UInt8(0)...17).reversed() {
-            region = determineExtent(zoom: z)
-            let size = determineSize(region: region, zoom: z)
+            let region = computeMapRegion(zoom: z)
+            let size = region.pixelSize(tileSize: tileSize)
             guard size.x <= unpaddedSize.x,
                   size.y <= unpaddedSize.y else { continue }
-            zoom = z
+            return region
         }
 
-        return (region, zoom)
+        return computeMapRegion(zoom: 1)
     }
 
-    private func determineExtent(zoom: UInt8) -> CoordinateRegion {
-        // TODO: Compute extent of annotations here once added
-
+    /// Computes a map region from the center, zoom and annotations.
+    private func computeMapRegion(zoom: UInt8) -> MapRegion {
         let minCorner = Coordinates(latitude: -.infinity, longitude: -.infinity)
         let maxCorner = Coordinates(latitude: .infinity, longitude: .infinity)
-        var region = CoordinateRegion(minCorner: minCorner, maxCorner: maxCorner)
+        var coords = CoordinateRegion(minCorner: minCorner, maxCorner: maxCorner)
+
+        // TODO: Compute extent of annotations here once added
 
         if let center {
-            region.minCorner = minCorner.min(2 * center - maxCorner)
-            region.maxCorner = maxCorner.max(2 * center - minCorner)
+            coords.minCorner = minCorner.min(2 * center - maxCorner)
+            coords.maxCorner = maxCorner.max(2 * center - minCorner)
         }
 
-        return region
-    }
-
-    private func determineSize(region: CoordinateRegion, zoom: UInt8) -> Vec2<Double> {
-        let minCorner = Vec2(region.minCorner, zoom: zoom)
-        let maxCorner = Vec2(region.maxCorner, zoom: zoom)
-        // TODO: Is this the right way around or do we have to flip the latitude like in
-        // https://github.com/danielalvsaaker/staticmap/blob/master/src/bounds.rs#L154 ?
-        return (maxCorner - minCorner) * Double(tileSize)
+        return MapRegion(coords: coords, zoom: zoom)
     }
 }
