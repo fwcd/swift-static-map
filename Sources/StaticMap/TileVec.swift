@@ -21,24 +21,24 @@ struct TileVec<Element> {
 }
 
 extension TileVec where Element == Int {
-    init(rounding vec: TileVec<Double>) {
+    init(rounding vec: TileVec<Double>, _ rule: FloatingPointRoundingRule) {
         self.init(
-            x: Int(vec.x.rounded(.down)),
-            y: Int(vec.y.rounded(.down))
+            x: Int(vec.x.rounded(rule)),
+            y: Int(vec.y.rounded(rule))
         )
     }
 }
 
 extension TileVec where Element == Double {
-    var rounded: TileVec<Int> {
-        TileVec<Int>(rounding: self)
-    }
-
     init(_ vec: TileVec<Int>) {
         self.init(
             x: Double(vec.x),
             y: Double(vec.y)
         )
+    }
+
+    func rounded(_ rule: FloatingPointRoundingRule) -> TileVec<Int> {
+        TileVec<Int>(rounding: self, rule)
     }
 }
 

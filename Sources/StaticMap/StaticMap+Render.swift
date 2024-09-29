@@ -52,6 +52,6 @@ extension StaticMap {
     }
 
     private func pixelPos(for pos: TileVec<Double>, mapRegion: MapRegion) -> Vec2<Double> {
-        Vec2(pos - TileVec(mapRegion.coords.topLeft, zoom: mapRegion.zoom)) * Double(tileSize) + size.asDouble / 2
+        Vec2(pos - TileVec(mapRegion.coords.center, zoom: mapRegion.zoom)) * Double(tileSize) + size.asDouble / 2
     }
 }
