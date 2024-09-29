@@ -5,7 +5,7 @@ extension TileRegion: Sequence {
 
     struct Iterator: IteratorProtocol {
         private let region: TileRegion
-        private var pos: TilePos
+        private var pos: TileVec<Int>
         private var done = false
 
         init(_ region: TileRegion) {

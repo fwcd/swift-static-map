@@ -3,14 +3,14 @@ import Utils
 /// A region on the tile grid.
 struct TileRegion: Hashable {
     /// The minimum tile position of the region.
-    var minPos: TilePos
+    var minPos: TileVec<Int>
     /// The maximum tile position of the region.
-    var maxPos: TilePos
+    var maxPos: TileVec<Int>
     /// The map zoom.
     var zoom: UInt8
 
     /// The center in (possibly fractional) tile coordinates.
-    var center: Vec2<Double> {
-        (Vec2(minPos) + Vec2(maxPos)) / 2
+    var center: TileVec<Double> {
+        TileVec<Double>(minPos + maxPos) / 2
     }
 }

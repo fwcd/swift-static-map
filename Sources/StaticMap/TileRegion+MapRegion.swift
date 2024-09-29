@@ -3,8 +3,8 @@ import Geodesy
 extension TileRegion {
     init(_ region: MapRegion) {
         self.init(
-            minPos: TilePos(region.coords.minCorner, zoom: region.zoom),
-            maxPos: TilePos(region.coords.maxCorner, zoom: region.zoom),
+            minPos: TileVec(region.coords.minCorner, zoom: region.zoom).rounded,
+            maxPos: TileVec(region.coords.maxCorner, zoom: region.zoom).rounded,
             zoom: region.zoom
         )
     }

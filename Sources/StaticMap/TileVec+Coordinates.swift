@@ -2,7 +2,7 @@ import Foundation
 import Geodesy
 import Utils
 
-extension Vec2 where T == Double {
+extension TileVec where Element == Double {
     init(_ coordinates: Coordinates, zoom: UInt8) {
         self.init(
             x: longitudeToX(coordinates.longitude, zoom: zoom),

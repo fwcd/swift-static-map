@@ -9,10 +9,10 @@ struct MapRegion: Hashable {
     var zoom: UInt8
 
     func pixelSize(tileSize: Int) -> Vec2<Double> {
-        let minCorner = Vec2(coords.minCorner, zoom: zoom)
-        let maxCorner = Vec2(coords.maxCorner, zoom: zoom)
+        let minCorner = TileVec(coords.minCorner, zoom: zoom)
+        let maxCorner = TileVec(coords.maxCorner, zoom: zoom)
         // TODO: Is this the right way around or do we have to flip the latitude like in
         // https://github.com/danielalvsaaker/staticmap/blob/master/src/bounds.rs#L154 ?
-        return (maxCorner - minCorner) * Double(tileSize)
+        return Vec2((maxCorner - minCorner) * Double(tileSize))
     }
 }
