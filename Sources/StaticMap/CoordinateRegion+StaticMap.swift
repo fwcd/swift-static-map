@@ -8,11 +8,16 @@ private let defaultSpan = CoordinateSpan(
 
 extension CoordinateRegion {
     init(_ staticMap: StaticMap) {
-        guard let center = staticMap.center else {
-            // TODO: Relax this condition once we support annotations
-            fatalError("A center is currently required for static maps")
+        if let center = staticMap.center {
+            self.init(center: center, span: staticMap.span ?? defaultSpan)
+        } else if !staticMap.annotations.isEmpty {
+            let positions = staticMap.annotations.map(\.coords)
+            let padding = Coordinates(latitude: 0.001, longitude: 0.001)
+            let minPos = positions.reduce1 { $0.min($1) }! - padding
+            let maxPos = positions.reduce1 { $0.max($1) }! + padding
+            self.init(minCorner: minPos, maxCorner: maxPos)
+        } else {
+            fatalError("Either a center or annotations are required for a static map")
         }
-
-        self.init(center: center, span: staticMap.span ?? defaultSpan)
     }
 }

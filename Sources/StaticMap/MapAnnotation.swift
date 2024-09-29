@@ -11,6 +11,17 @@ public indirect enum MapAnnotation {
     case fontSize(annotation: MapAnnotation, size: Double)
     case color(annotation: MapAnnotation, color: Color)
 
+    /// The center coordinates of the marked location.
+    var coords: Coordinates {
+        switch self {
+        case let .circle(coords: coords, radius: _): return coords
+        case let .pin(coords: coords): return coords
+        case let .label(annotation: annotation, text: _, padding: _): return annotation.coords
+        case let .fontSize(annotation: annotation, size: _): return annotation.coords
+        case let .color(annotation: annotation, color: _): return annotation.coords
+        }
+    }
+
     /// Labels this annotation with the given text.
     public func label(_ text: String, padding: Double = 10) -> Self {
         .label(annotation: self, text: text, padding: padding)
