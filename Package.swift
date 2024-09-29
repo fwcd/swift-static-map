@@ -17,7 +17,7 @@ let package = Package(
         .package(url: "https://github.com/swiftlang/swift-docc-plugin.git", from: "1.1.0"),
         .package(url: "https://github.com/fwcd/swift-utils.git", from: "4.1.1"),
         .package(url: "https://github.com/fwcd/swift-geodesy.git", from: "0.2.8"),
-        .package(url: "https://github.com/fwcd/swift-graphics.git", from: "4.0.0"),
+        .package(url: "https://github.com/fwcd/swift-graphics.git", from: "4.0.3"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.

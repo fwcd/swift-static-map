@@ -1,4 +1,5 @@
 import CairoGraphics
+import Geodesy
 import Utils
 
 extension StaticMap {
@@ -23,6 +24,16 @@ extension StaticMap {
         let mapRegion = MapRegion(self)
         let tileRegion = TileRegion(mapRegion)
 
+        func pixelPosFor(tilePos: TileVec<Double>) -> Vec2<Double> {
+            let tileVecFromCenter = tilePos - TileVec(mapRegion.coords.center, zoom: mapRegion.zoom)
+            return (Vec2(tileVecFromCenter) * Double(tileSize) + size.asDouble / 2).map { $0.rounded(.down) }
+        }
+
+        func pixelPosFor(coords: Coordinates) -> Vec2<Double> {
+            let tilePos = TileVec(coords, zoom: mapRegion.zoom)
+            return pixelPosFor(tilePos: tilePos)
+        }
+
         guard tileRegion.count <= maxTiles else {
             throw RenderError.tooManyTiles(tileRegion.count)
         }
@@ -43,16 +54,17 @@ extension StaticMap {
             for try await (tile, tileImage) in group {
                 ctx.draw(
                     image: tileImage,
-                    at: pixelPos(for: TileVec<Double>(tile.pos), mapRegion: mapRegion)
+                    at: pixelPosFor(tilePos: TileVec<Double>(tile.pos))
                 )
             }
         }
 
-        return image
-    }
+        for annotation in annotations {
+            annotation.render(to: ctx, with: MapAnnotation.RenderParams(
+                pixelPosForCoords: pixelPosFor(coords:)
+            ))
+        }
 
-    private func pixelPos(for pos: TileVec<Double>, mapRegion: MapRegion) -> Vec2<Double> {
-        let tileVecFromCenter = pos - TileVec(mapRegion.coords.center, zoom: mapRegion.zoom)
-        return (Vec2(tileVecFromCenter) * Double(tileSize) + size.asDouble / 2).map { $0.rounded(.down) }
+        return image
     }
 }

@@ -1,5 +1,5 @@
 {
-  "originHash" : "7e8b54eb5da540b1d5730cd91a240c5325fff6202d2757d64ea6ee42e529b1db",
+  "originHash" : "c72f675ac6d52109ff32ce80cfd611e7f4eb333d03188361c73ba33066cc14ba",
   "pins" : [
     {
       "identity" : "swift-cairo",
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/fwcd/swift-graphics.git",
       "state" : {
-        "revision" : "bb63a812bc5410af7f07cdc636371d55cc3e2aeb",
-        "version" : "4.0.0"
+        "revision" : "d761f1856b3e6f9472d4d06db9bce9106f0650ca",
+        "version" : "4.0.3"
       }
     },
     {
