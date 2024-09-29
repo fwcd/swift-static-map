@@ -34,15 +34,22 @@ extension MapAnnotation {
             ctx.draw(line: LineSegment(from: pinHeadPos, to: pinTargetPos, color: .gray))
             ctx.draw(ellipse: Ellipse(center: pinHeadPos, radius: Vec2(both: pinHeadRadius), color: style.color, isFilled: true))
 
-            let bounds = Rectangle(topLeft: pinTargetPos - Vec2(x: pinHeadRadius, y: 0), size: Vec2(x: 2 * pinHeadRadius, y: pinHeadRadius + pinHeight))
+            let height = pinHeadRadius + pinHeight
+            let bounds = Rectangle(topLeft: pinTargetPos - Vec2(x: pinHeadRadius, y: height), size: Vec2(x: 2 * pinHeadRadius, y: height))
             return bounds
         
         case let .label(annotation: annotation, text: text, padding: padding):
             var bounds = annotation.render(to: ctx, with: params, style: style)
-            let textPos = bounds.bottomRight + Vec2(x: 0, y: padding)
-            ctx.draw(text: Text(text, withSize: style.fontSize, at: textPos, color: style.color))
+
             // TODO: This is a very crude approximation of the text bounds, can we do better here?
-            bounds.size.y += padding + style.fontSize
+            let textWidth = Double(text.count) * (style.fontSize / 2)
+            let textHeight = style.fontSize
+            let textPos = bounds.bottomCenter + Vec2(x: -textWidth / 2, y: padding)
+
+            ctx.draw(text: Text(text, withSize: style.fontSize, at: textPos, color: style.color))
+
+            bounds.size.x = max(bounds.size.x, textWidth)
+            bounds.size.y += padding + textHeight
             return bounds
 
         case let .fontSize(annotation: annotation, size: size):
