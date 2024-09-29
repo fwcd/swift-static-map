@@ -17,7 +17,7 @@ StaticMap(center: .init(latitude: 51.5, longitude: 0))
 
 ![Simple Map](Images/SimpleMap.png)
 
-### Centered Pins
+### Pins with a Central Location
 
 ```swift
 StaticMap(
@@ -34,7 +34,7 @@ StaticMap(
 
 ![Centered Pins](Images/CenteredPins.png)
 
-### Free Pins
+### Freely Positioned Pins
 
 ```swift
 StaticMap(
@@ -50,7 +50,7 @@ StaticMap(
 
 ![Free Pins](Images/FreePins.png)
 
-### Labels
+### Labelled Pins
 
 ```swift
 StaticMap(
@@ -62,4 +62,4 @@ StaticMap(
 )
 ```
 
-![Labels](Images/Labels.png)
+![LabelledPins](Images/LabelledPins.png)
