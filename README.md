@@ -17,7 +17,7 @@ StaticMap(center: .init(latitude: 51.5, longitude: 0))
 
 ![Simple Map](Images/SimpleMap.png)
 
-### Pins
+### Centered Pins
 
 ```swift
 StaticMap(
@@ -32,7 +32,23 @@ StaticMap(
 )
 ```
 
-![Pins](Images/Pins.png)
+![Centered Pins](Images/CenteredPins.png)
+
+### Free Pins
+
+```swift
+StaticMap(
+    annotations: [
+        .pin(coords: .init(latitude: 58.8, longitude: -3.3)),
+        .pin(coords: .init(latitude: 54.2, longitude: -4.5)),
+        .pin(coords: .init(latitude: 52.5, longitude: -1.9)),
+        .pin(coords: .init(latitude: 51.1, longitude: -2.3)),
+        .pin(coords: .init(latitude: 51.5, longitude: 0.0)),
+    ]
+)
+```
+
+![Free Pins](Images/FreePins.png)
 
 ### Labels
 
