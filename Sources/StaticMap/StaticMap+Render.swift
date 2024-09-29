@@ -2,16 +2,25 @@ import CairoGraphics
 import Utils
 
 extension StaticMap {
-    public func render() async throws -> CairoImage {
+    public enum RenderError: Error {
+        case tooManyTiles(Int)
+    }
+
+    public func render(maxTiles: Int = 20, log: ((String) -> Void)? = nil) async throws -> CairoImage {
         let mapRegion = MapRegion(self)
         let tileRegion = TileRegion(mapRegion)
+
+        guard tileRegion.count <= maxTiles else {
+            throw RenderError.tooManyTiles(tileRegion.count)
+        }
 
         let image = try CairoImage(width: size.x, height: size.y)
         let ctx = CairoContext(image: image)
 
         try await withThrowingTaskGroup(of: (Tile, CairoImage).self) { group in
-            for tile in tileRegion {
+            for (i, tile) in tileRegion.enumerated() {
                 let url = tileProvider.url(for: tile)
+                log?("Downloading tile \(i) from \(url)...")
                 group.addTask {
                     // TODO: Are these guaranteed to be PNGs?
                     (tile, try await HTTPRequest(url: url).fetchPNG())
