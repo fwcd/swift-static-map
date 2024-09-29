@@ -3,4 +3,7 @@
 set -e
 cd "$(dirname "$0")/.."
 
-swift run SimpleMap Images/SimpleMap.png
+for snippet_path in Snippets/*.swift; do
+  snippet="$(basename "$snippet_path" .swift)"
+  swift run $snippet Images/$snippet.png
+done

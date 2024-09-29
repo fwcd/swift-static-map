@@ -16,3 +16,16 @@ StaticMap(center: .init(latitude: 51.5, longitude: 0))
 ```
 
 ![Simple Map](Images/SimpleMap.png)
+
+### Pins
+
+```swift
+StaticMap(
+    center: .init(latitude: 51.5, longitude: 0),
+    annotations: [
+        .pin(coords: .init(latitude: 51.5, longitude: 0)),
+    ]
+)
+```
+
+![Pins](Images/Pins.png)
