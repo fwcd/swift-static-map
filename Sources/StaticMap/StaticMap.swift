@@ -2,6 +2,7 @@ import CairoGraphics
 import Geodesy
 import Utils
 
+/// A parameterized representation of a static map.
 public struct StaticMap {
     let size: Vec2<Int>
     let padding: Vec2<Int>
@@ -14,6 +15,15 @@ public struct StaticMap {
         size - (2 * padding)
     }
 
+    /// Creates a new static map using the given parameters.
+    /// 
+    /// - Parameters:
+    ///   - size: The size of the static map in pixels
+    ///   - padding: The padding on the x and y axis in pixels
+    ///   - zoom: The zoom level
+    ///   - center: The center of the map as a geographical location
+    ///   - tileProvider: The OpenStreetMap tile provider to use
+    ///   - tileSize: The tile size in pixels
     public init(
         size: Vec2<Int> = .init(both: 300),
         padding: Vec2<Int> = .zero(),

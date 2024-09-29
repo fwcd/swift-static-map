@@ -2,11 +2,19 @@ import CairoGraphics
 import Utils
 
 extension StaticMap {
+    /// An error during rendering of a static map.
     public enum RenderError: Error {
         case invalidTileProvider(String)
         case tooManyTiles(Int)
     }
 
+    /// Renders the static map to an in-memory image.
+    /// 
+    /// - Parameters:
+    ///   - maxTiles: The maximum number of tiles to allow.
+    ///   - log: Optionally a logging function.
+    /// - Throws: ``RenderError`` if the static map cannot be rendered from this configuration
+    /// - Returns: The rendered image
     public func render(maxTiles: Int = 20, log: ((String) -> Void)? = nil) async throws -> CairoImage {
         guard tileProvider.urlTemplate.hasSuffix(".png") else {
             throw RenderError.invalidTileProvider("Only PNG tile providers are currently supported")
