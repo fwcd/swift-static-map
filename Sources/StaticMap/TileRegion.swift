@@ -13,4 +13,9 @@ struct TileRegion: Hashable {
     var center: TileVec<Double> {
         TileVec<Double>(minPos + maxPos) / 2
     }
+
+    /// The number of tiles in the region.
+    var count: Int {
+        (abs(maxPos.x - minPos.x) + 1) * (abs(maxPos.y - minPos.y) + 1)
+    }
 }

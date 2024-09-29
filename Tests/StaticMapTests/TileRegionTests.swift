@@ -19,5 +19,7 @@ final class TileRegionTests: XCTestCase {
             TileVec(x: 3, y: 6),
             TileVec(x: 4, y: 6),
         ].map { Tile(pos: $0, zoom: zoom) })
+
+        XCTAssertEqual(Array(region).count, region.count)
     }
 }
