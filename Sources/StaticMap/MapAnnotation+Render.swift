@@ -24,8 +24,18 @@ extension MapAnnotation {
             return bounds
 
         case let .pin(coords: coords):
-            // TODO: Use something fancier
-            return Self.circle(coords: coords, radius: 12).render(to: ctx, with: params, style: style)
+            // TODO: Make these customizable via RenderStyle and modifiers in the MapAnnotation API
+            let pinHeadRadius = 10.0
+            let pinHeight = 20.0
+
+            let pinTargetPos = params.pixelPosForCoords(coords)
+            let pinHeadPos = pinTargetPos - Vec2(x: 0, y: pinHeight)
+
+            ctx.draw(line: LineSegment(from: pinHeadPos, to: pinTargetPos, color: .gray))
+            ctx.draw(ellipse: Ellipse(center: pinHeadPos, radius: Vec2(both: pinHeadRadius), color: style.color, isFilled: true))
+
+            let bounds = Rectangle(topLeft: pinTargetPos - Vec2(x: pinHeadRadius, y: 0), size: Vec2(x: 2 * pinHeadRadius, y: pinHeadRadius + pinHeight))
+            return bounds
         
         case let .label(annotation: annotation, text: text, padding: padding):
             var bounds = annotation.render(to: ctx, with: params, style: style)
