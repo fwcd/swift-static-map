@@ -13,6 +13,6 @@ extension CoordinateRegion {
             fatalError("A center is currently required for static maps")
         }
 
-        self.init(center: center, span: defaultSpan)
+        self.init(center: center, span: staticMap.span ?? defaultSpan)
     }
 }

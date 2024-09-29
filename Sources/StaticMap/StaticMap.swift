@@ -8,6 +8,7 @@ public struct StaticMap {
     let padding: Vec2<Int>
     let zoom: UInt8?
     let center: Coordinates?
+    let span: CoordinateSpan?
     let tileProvider: TileProvider
     let tileSize: Int
     let annotations: [MapAnnotation]
@@ -30,6 +31,7 @@ public struct StaticMap {
         padding: Vec2<Int> = .zero(),
         zoom: UInt8? = nil,
         center: Coordinates? = nil,
+        span: CoordinateSpan? = nil,
         tileProvider: TileProvider = .standard,
         tileSize: Int = 256,
         annotations: [MapAnnotation] = []
@@ -38,6 +40,7 @@ public struct StaticMap {
         self.padding = padding
         self.zoom = zoom
         self.center = center
+        self.span = span
         self.tileProvider = tileProvider
         self.tileSize = tileSize
         self.annotations = annotations
