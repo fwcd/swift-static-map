@@ -22,7 +22,7 @@ private func inferZoomLevel(coords: CoordinateRegion, targetSize: Vec2<Double>, 
         let region = MapRegion(coords: coords, zoom: zoom)
         let size = region.pixelSize(tileSize: tileSize)
         guard size.x <= targetSize.x,
-                size.y <= targetSize.y else { continue }
+              size.y <= targetSize.y else { continue }
         return zoom
     }
 
