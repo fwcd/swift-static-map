@@ -6,3 +6,13 @@
 A small library for generating static maps directly from OpenStreetMap tiles.
 
 The implementation is based on a port of [danielalvsaaker](https://github.com/danielalvsaaker)'s [`staticmap`](https://github.com/danielalvsaaker/staticmap) library for Rust.
+
+## Examples
+
+### Simple Map
+
+```swift
+StaticMap(center: .init(latitude: 51.5, longitude: 0))
+```
+
+![Simple Map](Images/SimpleMap.png)
