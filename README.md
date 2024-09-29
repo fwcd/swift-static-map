@@ -1,6 +1,7 @@
 # Swift Static Map
 
 [![Build](https://github.com/fwcd/swift-static-map/actions/workflows/build.yml/badge.svg)](https://github.com/fwcd/swift-static-map/actions/workflows/build.yml)
+[![Docs](https://github.com/fwcd/swift-static-map/actions/workflows/docs.yml/badge.svg)](https://fwcd.github.io/swift-static-map/documentation/staticmap)
 
 A small library for generating static maps directly from OpenStreetMap tiles.
 
