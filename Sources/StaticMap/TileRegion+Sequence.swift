@@ -11,6 +11,9 @@ extension TileRegion: Sequence {
         init(_ region: TileRegion) {
             self.region = region
             pos = region.minPos
+
+            precondition(region.minPos.x <= region.maxPos.x, "region.minPos.x (\(region.minPos.x)) should be less than or equal to region.maxPos.x \(region.maxPos.x)")
+            precondition(region.minPos.y <= region.maxPos.y, "region.minPos.y (\(region.minPos.y)) should be less than or equal to region.maxPos.y \(region.maxPos.y)")
         }
 
         mutating func next() -> Tile? {
