@@ -33,3 +33,17 @@ StaticMap(
 ```
 
 ![Pins](Images/Pins.png)
+
+### Labels
+
+```swift
+StaticMap(
+    center: .init(latitude: 51.495, longitude: 0),
+    annotations: [
+        .pin(coords: .init(latitude: 51.496, longitude: -0.002)).label("This is a label"),
+        .pin(coords: .init(latitude: 51.494, longitude: -0.001)).label("This is another"),
+    ]
+)
+```
+
+![Labels](Images/Labels.png)
