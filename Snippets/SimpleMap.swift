@@ -9,7 +9,7 @@ guard CommandLine.argc == 2 else {
 
 let outputPath = CommandLine.arguments[1]
 
-let staticMap = StaticMap(center: .init(latitude: 60, longitude: 4))
+let staticMap = StaticMap(center: .init(latitude: 51.5, longitude: 0))
 let image = try await staticMap.render { print($0) }
 
 try image.pngEncoded().write(to: URL(fileURLWithPath: outputPath))
