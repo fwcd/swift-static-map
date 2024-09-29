@@ -10,10 +10,10 @@ guard CommandLine.argc == 2 else {
 let outputPath = CommandLine.arguments[1]
 
 let staticMap = StaticMap(
-    center: .init(latitude: 51.495, longitude: 0),
+    zoom: 5,
     annotations: [
-        .pin(coords: .init(latitude: 51.496, longitude: -0.002)).label("This is a label"),
-        .pin(coords: .init(latitude: 51.494, longitude: -0.001)).label("This is another"),
+        .pin(coords: .init(latitude: 53, longitude: -7)).label("Ireland"),
+        .pin(coords: .init(latitude: 51.5, longitude: -2)).label("Britain"),
     ]
 )
 let image = try await staticMap.render()
