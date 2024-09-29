@@ -21,7 +21,7 @@ extension StaticMap {
             throw RenderError.invalidTileProvider("Only PNG tile providers are currently supported")
         }
 
-        let mapRegion = MapRegion(self)
+        let mapRegion = try MapRegion(self)
         let tileRegion = TileRegion(mapRegion)
 
         func pixelPosFor(tilePos: TileVec<Double>) -> Vec2<Double> {

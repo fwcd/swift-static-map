@@ -7,7 +7,11 @@ private let defaultSpan = CoordinateSpan(
 )
 
 extension CoordinateRegion {
-    init(_ staticMap: StaticMap) {
+    enum StaticMapConversionError: Error {
+        case mapHasNeitherCenterNorAnnotations
+    }
+
+    init(_ staticMap: StaticMap) throws {
         if let center = staticMap.center {
             self.init(center: center, span: staticMap.span ?? defaultSpan)
         } else if !staticMap.annotations.isEmpty {
@@ -17,7 +21,7 @@ extension CoordinateRegion {
             let maxPos = positions.reduce1 { $0.max($1) }! + padding
             self.init(minCorner: minPos, maxCorner: maxPos)
         } else {
-            fatalError("Either a center or annotations are required for a static map")
+            throw StaticMapConversionError.mapHasNeitherCenterNorAnnotations
         }
     }
 }

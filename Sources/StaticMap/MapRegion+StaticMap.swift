@@ -2,8 +2,8 @@ import Geodesy
 import Utils
 
 extension MapRegion {
-    init(_ staticMap: StaticMap) {
-        let coords = CoordinateRegion(staticMap)
+    init(_ staticMap: StaticMap) throws {
+        let coords = try CoordinateRegion(staticMap)
         let zoom = staticMap.zoom
             ?? inferZoomLevel(
                 coords: coords,
