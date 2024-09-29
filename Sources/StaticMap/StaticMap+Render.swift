@@ -3,10 +3,15 @@ import Utils
 
 extension StaticMap {
     public enum RenderError: Error {
+        case invalidTileProvider(String)
         case tooManyTiles(Int)
     }
 
     public func render(maxTiles: Int = 20, log: ((String) -> Void)? = nil) async throws -> CairoImage {
+        guard tileProvider.urlTemplate.hasSuffix(".png") else {
+            throw RenderError.invalidTileProvider("Only PNG tile providers are currently supported")
+        }
+
         let mapRegion = MapRegion(self)
         let tileRegion = TileRegion(mapRegion)
 
