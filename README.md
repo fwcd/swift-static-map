@@ -15,7 +15,7 @@ The implementation is based on a port of [danielalvsaaker](https://github.com/da
 StaticMap(center: .init(latitude: 51.5, longitude: 0))
 ```
 
-![Simple Map](Images/SimpleMap.png)
+![Simple Map](Examples/SimpleMap.png)
 
 ### Pins with a Central Location
 
@@ -32,7 +32,7 @@ StaticMap(
 )
 ```
 
-![Centered Pins](Images/CenteredPins.png)
+![Centered Pins](Examples/CenteredPins.png)
 
 ### Freely Positioned Pins
 
@@ -48,7 +48,7 @@ StaticMap(
 )
 ```
 
-![Free Pins](Images/FreePins.png)
+![Free Pins](Examples/FreePins.png)
 
 ### Labelled Pins
 
@@ -62,4 +62,4 @@ StaticMap(
 )
 ```
 
-![LabelledPins](Images/LabelledPins.png)
+![LabelledPins](Examples/LabelledPins.png)
