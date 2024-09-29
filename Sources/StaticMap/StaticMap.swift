@@ -24,8 +24,10 @@ public struct StaticMap {
     ///   - padding: The padding on the x and y axis in pixels
     ///   - zoom: The zoom level
     ///   - center: The center of the map as a geographical location
+    ///   - span: The span of the map region to display
     ///   - tileProvider: The OpenStreetMap tile provider to use
     ///   - tileSize: The tile size in pixels
+    ///   - annotations: Annotations to render on top of the map
     public init(
         size: Vec2<Int> = .init(both: 300),
         padding: Vec2<Int> = .zero(),

@@ -4,11 +4,16 @@ import Utils
 
 /// A marker to be drawn on a static map.
 public indirect enum MapAnnotation {
+    /// A circle of the given radius.
     case circle(coords: Coordinates, radius: Double)
+    /// A pin marker.
     case pin(coords: Coordinates)
 
+    /// A modifier attaching the given label.
     case label(annotation: MapAnnotation, text: String, padding: Double)
+    /// A modifier setting the font size.
     case fontSize(annotation: MapAnnotation, size: Double)
+    /// A modifier setting the color.
     case color(annotation: MapAnnotation, color: Color)
 
     /// The center coordinates of the marked location.
