@@ -43,7 +43,7 @@ extension StaticMap {
             for try await (tile, tileImage) in group {
                 ctx.draw(
                     image: tileImage,
-                    at: pixelPos(for: TileVec<Double>(tile.pos), in: tileRegion)
+                    at: pixelPos(for: TileVec<Double>(tile.pos), mapRegion: mapRegion)
                 )
             }
         }
@@ -51,7 +51,7 @@ extension StaticMap {
         return image
     }
 
-    private func pixelPos(for pos: TileVec<Double>, in region: TileRegion) -> Vec2<Double> {
-        Vec2(pos - region.center) * Double(tileSize) + size.asDouble / 2
+    private func pixelPos(for pos: TileVec<Double>, mapRegion: MapRegion) -> Vec2<Double> {
+        Vec2(pos - TileVec(mapRegion.coords.topLeft, zoom: mapRegion.zoom)) * Double(tileSize) + size.asDouble / 2
     }
 }

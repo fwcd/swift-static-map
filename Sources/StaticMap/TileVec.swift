@@ -24,7 +24,7 @@ extension TileVec where Element == Int {
     init(rounding vec: TileVec<Double>) {
         self.init(
             x: Int(vec.x.rounded(.down)),
-            y: Int(vec.y.rounded(.up))
+            y: Int(vec.y.rounded(.down))
         )
     }
 }
