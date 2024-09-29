@@ -37,10 +37,13 @@ extension StaticMap {
 
         // TODO: Compute extent of annotations here once added
 
-        if let center {
-            coords.minCorner = minCorner.min(2 * center - maxCorner)
-            coords.maxCorner = maxCorner.max(2 * center - minCorner)
+        guard let center else {
+            // TODO: Relax this condition once the support annotations and require either one of them.
+            fatalError("Specifying a map center is currently required")
         }
+
+        coords.minCorner = minCorner.min(2 * center - maxCorner)
+        coords.maxCorner = maxCorner.max(2 * center - minCorner)
 
         return MapRegion(coords: coords, zoom: zoom)
     }
