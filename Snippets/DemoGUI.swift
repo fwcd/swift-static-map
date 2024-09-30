@@ -12,6 +12,26 @@ import Utils
 // Fix a naming conflict with Utils's Binding
 private typealias Binding = SwiftUI.Binding
 
+private struct MapOptions: Hashable {
+    var region: CoordinateRegion?
+    var size: Vec2<Double> = .init(both: 256)
+    var opacity: Double = 1.0
+    var markOutdated = false
+    var resizeOffset: Vec2<Double> = .zero()
+
+    var sizeWithResize: Vec2<Double> {
+        size + resizeOffset * 2
+    }
+
+    var staticMap: StaticMap {
+        StaticMap(
+            size: sizeWithResize.map { Int($0.rounded()) },
+            center: region?.center,
+            span: region?.span
+        )
+    }
+}
+
 private struct ResizeHandle: View {
     @Binding var offset: Vec2<Double>
     var onSubmit: () -> Void
@@ -30,17 +50,6 @@ private struct ResizeHandle: View {
                         offset = .zero()
                     }
             )
-    }
-}
-
-private struct MapOptions: Hashable {
-    var size: Vec2<Double> = .init(both: 256)
-    var opacity: Double = 1.0
-    var markOutdated = false
-    var resizeOffset: Vec2<Double> = .zero()
-
-    var sizeWithResize: Vec2<Double> {
-        size + resizeOffset * 2
     }
 }
 
@@ -72,11 +81,6 @@ private struct OverlayPanel: View {
 
 @available(macOS 15.0, *)
 private struct ContentView: View {
-    @State private var region = MKCoordinateRegion(
-        center: .init(latitude: 51.5, longitude: 0.0),
-        span: .init(latitudeDelta: 2, longitudeDelta: 2)
-    )
-
     @State private var mapImage: NSImage?
     @State private var mapOptions = MapOptions()
     @State private var errorMessage: String?
@@ -89,38 +93,41 @@ private struct ContentView: View {
                 .size(width: mapOptions.sizeWithResize.x, height: mapOptions.sizeWithResize.y, anchor: .center)
 
             ZStack(alignment: .bottom) {
-                Map(initialPosition: .region(region))
-                    .onMapCameraChange(frequency: .continuous) { context in
-                        let totalRegion = context.region
-                        mapOptions.markOutdated = true
-                        region = MKCoordinateRegion(
-                            center: totalRegion.center,
-                            span: MKCoordinateSpan(
-                                latitudeDelta: totalRegion.span.latitudeDelta * CGFloat(mapOptions.size.y) / geometry.size.height,
-                                longitudeDelta: totalRegion.span.longitudeDelta * CGFloat(mapOptions.size.x) / geometry.size.width
-                            )
+                Map(initialPosition: .region(MKCoordinateRegion(
+                    center: .init(latitude: 51.5, longitude: 0.0),
+                    span: .init(latitudeDelta: 2, longitudeDelta: 2)
+                )))
+                .onMapCameraChange(frequency: .continuous) { context in
+                    let totalRegion: MKCoordinateRegion = context.region
+                    mapOptions.markOutdated = true
+                    mapOptions.region = CoordinateRegion(
+                        center: Coordinates(totalRegion.center),
+                        span: CoordinateSpan(
+                            latitudeDelta: .init(degrees: totalRegion.span.latitudeDelta * mapOptions.size.y / geometry.size.height),
+                            longitudeDelta: .init(degrees: totalRegion.span.longitudeDelta * mapOptions.size.x / geometry.size.width)
                         )
-                        scheduleStaticMapUpdate()
-                    }
-                    .overlay {
-                        Group {
-                            Rectangle()
-                                .subtracting(clipShape)
-                                .fill(.black.opacity(0.5))
-                            if let mapImage {
-                                Image(nsImage: mapImage)
-                                    .clipShape(clipShape)
-                                    .opacity((mapOptions.markOutdated ? 0.3 : 1) * mapOptions.opacity)
-                            }
+                    )
+                    scheduleStaticMapUpdate()
+                }
+                .overlay {
+                    Group {
+                        Rectangle()
+                            .subtracting(clipShape)
+                            .fill(.black.opacity(0.5))
+                        if let mapImage {
+                            Image(nsImage: mapImage)
+                                .clipShape(clipShape)
+                                .opacity((mapOptions.markOutdated ? 0.3 : 1) * mapOptions.opacity)
                         }
-                        .allowsHitTesting(false)
+                    }
+                    .allowsHitTesting(false)
 
-                        let baseOffset = mapOptions.size / 2 + Vec2(both: 10)
-                        ResizeHandle(offset: $mapOptions.resizeOffset) {
-                            mapOptions.size += mapOptions.resizeOffset * 2
-                        }
-                        .offset(x: baseOffset.x, y: baseOffset.y)
+                    let baseOffset = mapOptions.size / 2 + Vec2(both: 10)
+                    ResizeHandle(offset: $mapOptions.resizeOffset) {
+                        mapOptions.size += mapOptions.resizeOffset * 2
                     }
+                    .offset(x: baseOffset.x, y: baseOffset.y)
+                }
                 OverlayPanel(errorMessage: errorMessage, mapOptions: $mapOptions)
                     .padding()
             }
@@ -145,12 +152,7 @@ private struct ContentView: View {
     private func updateStaticMap() async {
         do {
             NSLog("Regenerating static map")
-            let staticMap = StaticMap(
-                size: mapOptions.sizeWithResize.map { Int($0.rounded()) },
-                center: Coordinates(region.center),
-                span: CoordinateSpan(region.span)
-            )
-            let cairoImage = try await staticMap.render { logMessage in
+            let cairoImage = try await mapOptions.staticMap.render { logMessage in
                 NSLog("%@", logMessage)
             }
             let pngData = try cairoImage.pngEncoded()
