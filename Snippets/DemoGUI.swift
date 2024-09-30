@@ -100,7 +100,7 @@ private struct ContentView: View {
                                 longitudeDelta: totalRegion.span.longitudeDelta * CGFloat(mapOptions.size.x) / geometry.size.width
                             )
                         )
-                        mapUpdateSubject.send()
+                        scheduleStaticMapUpdate()
                     }
                     .overlay {
                         Group {
@@ -125,36 +125,40 @@ private struct ContentView: View {
                     .padding()
             }
         }
-        .onAppear {
-            regenerateStaticMap()
+        .task {
+            await updateStaticMap()
         }
         .onChange(of: mapOptions.sizeWithResize) {
-            mapUpdateSubject.send()
+            scheduleStaticMapUpdate()
         }
         .onReceive(mapUpdateSubject.debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)) {
-            regenerateStaticMap()
+            Task {
+                await updateStaticMap()
+            }
         }
     }
 
-    private func regenerateStaticMap() {
-        Task {
-            do {
-                NSLog("Regenerating static map")
-                let staticMap = StaticMap(
-                    size: mapOptions.sizeWithResize.map { Int($0.rounded()) },
-                    center: Coordinates(region.center),
-                    span: CoordinateSpan(region.span)
-                )
-                let cairoImage = try await staticMap.render { logMessage in
-                    NSLog("%@", logMessage)
-                }
-                let pngData = try cairoImage.pngEncoded()
-                mapImage = NSImage(data: pngData)
-                mapOptions.markOutdated = false
-                errorMessage = nil
-            } catch {
-                errorMessage = "\(error)"
+    private func scheduleStaticMapUpdate() {
+        mapUpdateSubject.send()
+    }
+
+    private func updateStaticMap() async {
+        do {
+            NSLog("Regenerating static map")
+            let staticMap = StaticMap(
+                size: mapOptions.sizeWithResize.map { Int($0.rounded()) },
+                center: Coordinates(region.center),
+                span: CoordinateSpan(region.span)
+            )
+            let cairoImage = try await staticMap.render { logMessage in
+                NSLog("%@", logMessage)
             }
+            let pngData = try cairoImage.pngEncoded()
+            mapImage = NSImage(data: pngData)
+            mapOptions.markOutdated = false
+            errorMessage = nil
+        } catch {
+            errorMessage = "\(error)"
         }
     }
 }
