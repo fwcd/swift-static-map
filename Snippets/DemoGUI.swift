@@ -9,7 +9,7 @@ import SwiftUI
 import MapKit
 import Utils
 
-// Fix a name clash
+// Fix a naming conflict with Utils's Binding
 private typealias Binding = SwiftUI.Binding
 
 private struct ResizeHandle: View {
