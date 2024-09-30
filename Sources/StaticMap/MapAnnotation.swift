@@ -1,9 +1,9 @@
 import Geodesy
-import Graphics
+@preconcurrency import Graphics
 import Utils
 
 /// A marker to be drawn on a static map.
-public indirect enum MapAnnotation {
+public indirect enum MapAnnotation: Sendable {
     /// A circle of the given radius.
     case circle(coords: Coordinates, radius: Double)
     /// A pin marker.

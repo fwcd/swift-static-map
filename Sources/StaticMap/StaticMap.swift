@@ -1,9 +1,9 @@
-import CairoGraphics
+@preconcurrency import CairoGraphics
 import Geodesy
 import Utils
 
 /// A parameterized representation of a static map.
-public struct StaticMap {
+public struct StaticMap: Sendable {
     let size: Vec2<Int>
     let padding: Vec2<Int>
     let zoom: UInt8?

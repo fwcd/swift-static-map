@@ -1,5 +1,5 @@
 {
-  "originHash" : "c72f675ac6d52109ff32ce80cfd611e7f4eb333d03188361c73ba33066cc14ba",
+  "originHash" : "8d8f8e07be3a4e23563f4e3f9d85677d68cf1a4989ecfcb6809a24118fc7b67d",
   "pins" : [
     {
       "identity" : "swift-cairo",
@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/fwcd/swift-utils.git",
       "state" : {
-        "revision" : "ad5fd321d30f72abf37a5f42cbac71d261e2d783",
-        "version" : "4.1.1"
+        "revision" : "345aaba8ef60d06ec041010660eb13df6cc8c43d",
+        "version" : "4.1.3"
       }
     },
     {

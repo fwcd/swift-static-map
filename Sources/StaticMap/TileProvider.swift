@@ -3,7 +3,7 @@ import Foundation
 /// The URL template for a raster tile provider.
 /// 
 /// See https://wiki.openstreetmap.org/wiki/Raster_tile_providers
-public struct TileProvider {
+public struct TileProvider: Sendable {
     /// OpenStreetMap's standard tile layer.
     public static let standard = Self(urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png")
     /// CyclOSM

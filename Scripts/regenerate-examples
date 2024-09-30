@@ -3,7 +3,6 @@
 set -e
 cd "$(dirname "$0")/.."
 
-for snippet_path in Snippets/*.swift; do
-  snippet="$(basename "$snippet_path" .swift)"
+for snippet in CenteredPins FreePins LabelledPins SimpleMap; do
   swift run $snippet Examples/$snippet.png
 done
