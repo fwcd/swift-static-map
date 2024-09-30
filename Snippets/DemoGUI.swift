@@ -164,7 +164,7 @@ private struct ContentView: View {
 }
 
 @available(macOS 15, *)
-struct DemoGUI: App {
+struct DemoGUIApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -184,7 +184,7 @@ DispatchQueue.main.async {
 }
 
 if #available(macOS 15, *) {
-    DemoGUI.main()
+    DemoGUIApp.main()
 } else {
     fatalError("The demo GUI requires macOS 15!")
 }
