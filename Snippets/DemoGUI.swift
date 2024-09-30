@@ -62,8 +62,11 @@ private struct OverlayPanel: View {
             if let errorMessage {
                 Text("Error while rendering map: \(errorMessage)")
             } else {
-                Slider(value: $mapOptions.opacity)
-                    .frame(width: 100)
+                HStack {
+                    Text("Opacity")
+                    Slider(value: $mapOptions.opacity)
+                        .frame(width: 100)
+                }
             }
         }
         .padding()
