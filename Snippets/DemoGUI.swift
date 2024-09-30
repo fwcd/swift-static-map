@@ -78,12 +78,19 @@ struct DemoGUI: App {
                                         }
                                 )
                         }
-                    HStack {
-                        Slider(value: $staticMapOpacity)
-                            .frame(width: 100)
+                    VStack {
+                        if let errorMessage {
+                            Text("Error while rendering map: \(errorMessage)")
+                        } else {
+                            Slider(value: $staticMapOpacity)
+                                .frame(width: 100)
+                        }
                     }
                     .padding()
-                    .background(RoundedRectangle(cornerRadius: 10).fill(.regularMaterial))
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(errorMessage != nil ? AnyShapeStyle(.red.opacity(0.5)) : AnyShapeStyle(.regularMaterial))
+                    )
                     .fixedSize()
                     .padding()
                 }
@@ -112,6 +119,7 @@ struct DemoGUI: App {
                 let pngData = try cairoImage.pngEncoded()
                 staticMapImage = NSImage(data: pngData)
                 staticMapOutdated = false
+                errorMessage = nil
             } catch {
                 errorMessage = "\(error)"
             }
