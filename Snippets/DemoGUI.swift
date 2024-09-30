@@ -100,6 +100,7 @@ private struct ContentView: View {
                     center: .init(latitude: 51.5, longitude: 0.0),
                     span: .init(latitudeDelta: 2, longitudeDelta: 2)
                 )))
+                .mapControlVisibility(.hidden)
                 .onMapCameraChange(frequency: .continuous) { context in
                     let totalRegion: MKCoordinateRegion = context.region
                     mapOptions.markOutdated = true
