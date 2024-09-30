@@ -9,6 +9,67 @@ import SwiftUI
 import MapKit
 import Utils
 
+// Fix a name clash
+private typealias Binding = SwiftUI.Binding
+
+private struct ResizeHandle: View {
+    @Binding var offset: Vec2<Double>
+    var onSubmit: () -> Void
+
+    var body: some View {
+        Image(systemName: "arrowtriangle.left.and.line.vertical.and.arrowtriangle.right.fill")
+            .rotationEffect(.degrees(45))
+            .offset(x: offset.x, y: offset.y)
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        offset = Vec2(x: value.translation.width, y: value.translation.height)
+                    }
+                    .onEnded { _ in
+                        onSubmit()
+                        offset = .zero()
+                    }
+            )
+    }
+}
+
+private struct MapOptions: Hashable {
+    var size: Vec2<Double> = .init(both: 256)
+    var opacity: Double = 1.0
+    var markOutdated = false
+    var resizeOffset: Vec2<Double> = .zero()
+
+    var sizeWithResize: Vec2<Double> {
+        size + resizeOffset * 2
+    }
+}
+
+private struct OverlayPanel: View {
+    let errorMessage: String?
+    @Binding var mapOptions: MapOptions
+
+    var body: some View {
+        VStack {
+            if let errorMessage {
+                Text("Error while rendering map: \(errorMessage)")
+            } else {
+                Slider(value: $mapOptions.opacity)
+                    .frame(width: 100)
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(
+                    errorMessage != nil
+                        ? AnyShapeStyle(.red.opacity(0.5))
+                        : AnyShapeStyle(.regularMaterial)
+                )
+        )
+        .fixedSize()
+    }
+}
+
 @available(macOS 15, *)
 struct DemoGUI: App {
     @State private var region = MKCoordinateRegion(
@@ -16,89 +77,62 @@ struct DemoGUI: App {
         span: .init(latitudeDelta: 2, longitudeDelta: 2)
     )
 
-    @State private var staticMapImage: NSImage?
-    @State private var staticMapOutdated = false
-    @State private var staticMapOpacity = 1.0
-    @State private var mapSize: Vec2<Double> = .init(both: 256)
-    @State private var mapResizeOffset: Vec2<Double> = .zero()
+    @State private var mapImage: NSImage?
+    @State private var mapOptions = MapOptions()
     @State private var errorMessage: String?
 
-    private var mapSizeWithResizing: Vec2<Double> {
-        mapSize + mapResizeOffset * 2
-    }
-
-    private let staticMapUpdatePublisher = PassthroughSubject<Void, Never>()
+    private let mapUpdateSubject = PassthroughSubject<Void, Never>()
 
     var body: some Scene {
         WindowGroup {
             GeometryReader { geometry in
                 let clipShape = RoundedRectangle(cornerRadius: 10)
-                    .size(width: mapSizeWithResizing.x, height: mapSizeWithResizing.y, anchor: .center)
+                    .size(width: mapOptions.sizeWithResize.x, height: mapOptions.sizeWithResize.y, anchor: .center)
 
                 ZStack(alignment: .bottom) {
                     Map(initialPosition: .region(region))
                         .onMapCameraChange(frequency: .continuous) { context in
                             let totalRegion = context.region
-                            staticMapOutdated = true
+                            mapOptions.markOutdated = true
                             region = MKCoordinateRegion(
                                 center: totalRegion.center,
                                 span: MKCoordinateSpan(
-                                    latitudeDelta: totalRegion.span.latitudeDelta * CGFloat(mapSize.y) / geometry.size.height,
-                                    longitudeDelta: totalRegion.span.longitudeDelta * CGFloat(mapSize.x) / geometry.size.width
+                                    latitudeDelta: totalRegion.span.latitudeDelta * CGFloat(mapOptions.size.y) / geometry.size.height,
+                                    longitudeDelta: totalRegion.span.longitudeDelta * CGFloat(mapOptions.size.x) / geometry.size.width
                                 )
                             )
-                            staticMapUpdatePublisher.send()
+                            mapUpdateSubject.send()
                         }
                         .overlay {
                             Group {
                                 Rectangle()
                                     .subtracting(clipShape)
                                     .fill(.black.opacity(0.5))
-                                if let staticMapImage {
-                                    Image(nsImage: staticMapImage)
+                                if let mapImage {
+                                    Image(nsImage: mapImage)
                                         .clipShape(clipShape)
-                                        .opacity((staticMapOutdated ? 0.3 : 1) * staticMapOpacity)
+                                        .opacity((mapOptions.markOutdated ? 0.3 : 1) * mapOptions.opacity)
                                 }
                             }
                             .allowsHitTesting(false)
 
-                            let resizeHandleOffset = mapSizeWithResizing / 2 + Vec2(both: 10)
-                            Image(systemName: "arrowtriangle.left.and.line.vertical.and.arrowtriangle.right.fill")
-                                .rotationEffect(.degrees(45))
-                                .offset(x: resizeHandleOffset.x, y: resizeHandleOffset.y)
-                                .gesture(
-                                    DragGesture()
-                                        .onChanged { value in
-                                            mapResizeOffset = Vec2(x: value.translation.width, y: value.translation.height)
-                                            staticMapUpdatePublisher.send()
-                                        }
-                                        .onEnded { _ in
-                                            mapSize += mapResizeOffset * 2
-                                            mapResizeOffset = .zero()
-                                        }
-                                )
+                            let baseOffset = mapOptions.size / 2 + Vec2(both: 10)
+                            ResizeHandle(offset: $mapOptions.resizeOffset) {
+                                mapOptions.size += mapOptions.resizeOffset * 2
+                            }
+                            .offset(x: baseOffset.x, y: baseOffset.y)
                         }
-                    VStack {
-                        if let errorMessage {
-                            Text("Error while rendering map: \(errorMessage)")
-                        } else {
-                            Slider(value: $staticMapOpacity)
-                                .frame(width: 100)
-                        }
-                    }
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(errorMessage != nil ? AnyShapeStyle(.red.opacity(0.5)) : AnyShapeStyle(.regularMaterial))
-                    )
-                    .fixedSize()
-                    .padding()
+                    OverlayPanel(errorMessage: errorMessage, mapOptions: $mapOptions)
+                        .padding()
                 }
             }
             .onAppear {
                 regenerateStaticMap()
             }
-            .onReceive(staticMapUpdatePublisher.debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)) {
+            .onChange(of: mapOptions.sizeWithResize) {
+                mapUpdateSubject.send()
+            }
+            .onReceive(mapUpdateSubject.debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)) {
                 regenerateStaticMap()
             }
         }
@@ -109,7 +143,7 @@ struct DemoGUI: App {
             do {
                 NSLog("Regenerating static map")
                 let staticMap = StaticMap(
-                    size: mapSizeWithResizing.map { Int($0.rounded()) },
+                    size: mapOptions.sizeWithResize.map { Int($0.rounded()) },
                     center: Coordinates(region.center),
                     span: CoordinateSpan(region.span)
                 )
@@ -117,8 +151,8 @@ struct DemoGUI: App {
                     NSLog("%@", logMessage)
                 }
                 let pngData = try cairoImage.pngEncoded()
-                staticMapImage = NSImage(data: pngData)
-                staticMapOutdated = false
+                mapImage = NSImage(data: pngData)
+                mapOptions.markOutdated = false
                 errorMessage = nil
             } catch {
                 errorMessage = "\(error)"
