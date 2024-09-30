@@ -70,8 +70,8 @@ private struct OverlayPanel: View {
     }
 }
 
-@available(macOS 15, *)
-struct DemoGUI: App {
+@available(macOS 15.0, *)
+private struct ContentView: View {
     @State private var region = MKCoordinateRegion(
         center: .init(latitude: 51.5, longitude: 0.0),
         span: .init(latitudeDelta: 2, longitudeDelta: 2)
@@ -83,58 +83,56 @@ struct DemoGUI: App {
 
     private let mapUpdateSubject = PassthroughSubject<Void, Never>()
 
-    var body: some Scene {
-        WindowGroup {
-            GeometryReader { geometry in
-                let clipShape = RoundedRectangle(cornerRadius: 10)
-                    .size(width: mapOptions.sizeWithResize.x, height: mapOptions.sizeWithResize.y, anchor: .center)
+    var body: some View {
+        GeometryReader { geometry in
+            let clipShape = RoundedRectangle(cornerRadius: 10)
+                .size(width: mapOptions.sizeWithResize.x, height: mapOptions.sizeWithResize.y, anchor: .center)
 
-                ZStack(alignment: .bottom) {
-                    Map(initialPosition: .region(region))
-                        .onMapCameraChange(frequency: .continuous) { context in
-                            let totalRegion = context.region
-                            mapOptions.markOutdated = true
-                            region = MKCoordinateRegion(
-                                center: totalRegion.center,
-                                span: MKCoordinateSpan(
-                                    latitudeDelta: totalRegion.span.latitudeDelta * CGFloat(mapOptions.size.y) / geometry.size.height,
-                                    longitudeDelta: totalRegion.span.longitudeDelta * CGFloat(mapOptions.size.x) / geometry.size.width
-                                )
+            ZStack(alignment: .bottom) {
+                Map(initialPosition: .region(region))
+                    .onMapCameraChange(frequency: .continuous) { context in
+                        let totalRegion = context.region
+                        mapOptions.markOutdated = true
+                        region = MKCoordinateRegion(
+                            center: totalRegion.center,
+                            span: MKCoordinateSpan(
+                                latitudeDelta: totalRegion.span.latitudeDelta * CGFloat(mapOptions.size.y) / geometry.size.height,
+                                longitudeDelta: totalRegion.span.longitudeDelta * CGFloat(mapOptions.size.x) / geometry.size.width
                             )
-                            mapUpdateSubject.send()
-                        }
-                        .overlay {
-                            Group {
-                                Rectangle()
-                                    .subtracting(clipShape)
-                                    .fill(.black.opacity(0.5))
-                                if let mapImage {
-                                    Image(nsImage: mapImage)
-                                        .clipShape(clipShape)
-                                        .opacity((mapOptions.markOutdated ? 0.3 : 1) * mapOptions.opacity)
-                                }
+                        )
+                        mapUpdateSubject.send()
+                    }
+                    .overlay {
+                        Group {
+                            Rectangle()
+                                .subtracting(clipShape)
+                                .fill(.black.opacity(0.5))
+                            if let mapImage {
+                                Image(nsImage: mapImage)
+                                    .clipShape(clipShape)
+                                    .opacity((mapOptions.markOutdated ? 0.3 : 1) * mapOptions.opacity)
                             }
-                            .allowsHitTesting(false)
+                        }
+                        .allowsHitTesting(false)
 
-                            let baseOffset = mapOptions.size / 2 + Vec2(both: 10)
-                            ResizeHandle(offset: $mapOptions.resizeOffset) {
-                                mapOptions.size += mapOptions.resizeOffset * 2
-                            }
-                            .offset(x: baseOffset.x, y: baseOffset.y)
+                        let baseOffset = mapOptions.size / 2 + Vec2(both: 10)
+                        ResizeHandle(offset: $mapOptions.resizeOffset) {
+                            mapOptions.size += mapOptions.resizeOffset * 2
                         }
-                    OverlayPanel(errorMessage: errorMessage, mapOptions: $mapOptions)
-                        .padding()
-                }
+                        .offset(x: baseOffset.x, y: baseOffset.y)
+                    }
+                OverlayPanel(errorMessage: errorMessage, mapOptions: $mapOptions)
+                    .padding()
             }
-            .onAppear {
-                regenerateStaticMap()
-            }
-            .onChange(of: mapOptions.sizeWithResize) {
-                mapUpdateSubject.send()
-            }
-            .onReceive(mapUpdateSubject.debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)) {
-                regenerateStaticMap()
-            }
+        }
+        .onAppear {
+            regenerateStaticMap()
+        }
+        .onChange(of: mapOptions.sizeWithResize) {
+            mapUpdateSubject.send()
+        }
+        .onReceive(mapUpdateSubject.debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)) {
+            regenerateStaticMap()
         }
     }
 
@@ -157,6 +155,15 @@ struct DemoGUI: App {
             } catch {
                 errorMessage = "\(error)"
             }
+        }
+    }
+}
+
+@available(macOS 15, *)
+struct DemoGUI: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
         }
     }
 }
