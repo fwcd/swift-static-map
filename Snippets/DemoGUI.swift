@@ -7,8 +7,7 @@ import Geodesy
 import StaticMap
 import SwiftUI
 import MapKit
-
-private let mapSize = 256
+import Utils
 
 @available(macOS 15, *)
 struct DemoGUI: App {
@@ -20,16 +19,22 @@ struct DemoGUI: App {
     @State private var staticMapImage: NSImage?
     @State private var staticMapOutdated = false
     @State private var staticMapOpacity = 1.0
+    @State private var mapSize: Vec2<Double> = .init(both: 256)
+    @State private var mapResizeOffset: Vec2<Double> = .zero()
     @State private var errorMessage: String?
+
+    private var mapSizeWithResizing: Vec2<Double> {
+        mapSize + mapResizeOffset * 2
+    }
 
     private let staticMapUpdatePublisher = PassthroughSubject<Void, Never>()
 
     var body: some Scene {
         WindowGroup {
-            let clipShape = RoundedRectangle(cornerRadius: 10)
-                .size(width: CGFloat(mapSize), height: CGFloat(mapSize), anchor: .center)
-
             GeometryReader { geometry in
+                let clipShape = RoundedRectangle(cornerRadius: 10)
+                    .size(width: mapSizeWithResizing.x, height: mapSizeWithResizing.y, anchor: .center)
+
                 ZStack(alignment: .bottom) {
                     Map(initialPosition: .region(region))
                         .onMapCameraChange(frequency: .continuous) { context in
@@ -38,8 +43,8 @@ struct DemoGUI: App {
                             region = MKCoordinateRegion(
                                 center: totalRegion.center,
                                 span: MKCoordinateSpan(
-                                    latitudeDelta: totalRegion.span.latitudeDelta * CGFloat(mapSize) / geometry.size.height,
-                                    longitudeDelta: totalRegion.span.longitudeDelta * CGFloat(mapSize) / geometry.size.width
+                                    latitudeDelta: totalRegion.span.latitudeDelta * CGFloat(mapSize.y) / geometry.size.height,
+                                    longitudeDelta: totalRegion.span.longitudeDelta * CGFloat(mapSize.x) / geometry.size.width
                                 )
                             )
                             staticMapUpdatePublisher.send()
@@ -56,6 +61,22 @@ struct DemoGUI: App {
                                 }
                             }
                             .allowsHitTesting(false)
+
+                            let resizeHandleOffset = mapSizeWithResizing / 2 + Vec2(both: 10)
+                            Image(systemName: "arrowtriangle.left.and.line.vertical.and.arrowtriangle.right.fill")
+                                .rotationEffect(.degrees(45))
+                                .offset(x: resizeHandleOffset.x, y: resizeHandleOffset.y)
+                                .gesture(
+                                    DragGesture()
+                                        .onChanged { value in
+                                            mapResizeOffset = Vec2(x: value.translation.width, y: value.translation.height)
+                                            staticMapUpdatePublisher.send()
+                                        }
+                                        .onEnded { _ in
+                                            mapSize += mapResizeOffset * 2
+                                            mapResizeOffset = .zero()
+                                        }
+                                )
                         }
                     HStack {
                         Slider(value: $staticMapOpacity)
@@ -81,10 +102,14 @@ struct DemoGUI: App {
             do {
                 NSLog("Regenerating static map")
                 let staticMap = StaticMap(
+                    size: mapSizeWithResizing.map { Int($0.rounded()) },
                     center: Coordinates(region.center),
                     span: CoordinateSpan(region.span)
                 )
-                let pngData = try await staticMap.render().pngEncoded()
+                let cairoImage = try await staticMap.render { logMessage in
+                    NSLog("%@", logMessage)
+                }
+                let pngData = try cairoImage.pngEncoded()
                 staticMapImage = NSImage(data: pngData)
                 staticMapOutdated = false
             } catch {
