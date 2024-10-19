@@ -19,7 +19,7 @@ extension StaticMap {
     /// - Returns: The rendered image
     public func render(
         maxTiles: Int = 20,
-        log: ((String) -> Void)? = nil,
+        log: (@Sendable (String) -> Void)? = nil,
         isolation: isolated (any Actor)? = #isolation
     ) async throws -> CairoImage {
         guard tileProvider.urlTemplate.hasSuffix(".png") else {
