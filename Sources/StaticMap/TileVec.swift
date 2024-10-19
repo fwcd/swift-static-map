@@ -104,3 +104,5 @@ extension TileVec: Divisible where Element: Divisible {
         lhs = lhs / rhs
     }
 }
+
+extension TileVec: Sendable where Element: Sendable {}

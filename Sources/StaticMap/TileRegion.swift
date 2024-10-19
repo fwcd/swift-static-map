@@ -1,7 +1,7 @@
 import Utils
 
 /// A region on the tile grid.
-struct TileRegion: Hashable {
+struct TileRegion: Hashable, Sendable {
     /// The minimum tile position of the region.
     var minPos: TileVec<Int>
     /// The maximum tile position of the region.
