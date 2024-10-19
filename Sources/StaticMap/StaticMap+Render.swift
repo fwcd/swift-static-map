@@ -1,4 +1,5 @@
 import CairoGraphics
+import Foundation
 import Geodesy
 import Utils
 
@@ -16,7 +17,11 @@ extension StaticMap {
     ///   - log: Optionally a logging function.
     /// - Throws: ``RenderError`` if the static map cannot be rendered from this configuration
     /// - Returns: The rendered image
-    public func render(maxTiles: Int = 20, log: ((String) -> Void)? = nil) async throws -> CairoImage {
+    public func render(
+        maxTiles: Int = 20,
+        log: ((String) -> Void)? = nil,
+        isolation: isolated (any Actor)? = #isolation
+    ) async throws -> CairoImage {
         guard tileProvider.urlTemplate.hasSuffix(".png") else {
             throw RenderError.invalidTileProvider("Only PNG tile providers are currently supported")
         }
@@ -41,19 +46,19 @@ extension StaticMap {
         let image = try CairoImage(width: size.x, height: size.y)
         let ctx = CairoContext(image: image)
 
-        try await withThrowingTaskGroup(of: (Tile, CairoImage).self) { group in
+        try await withThrowingTaskGroup(of: (Tile, Data).self) { group in
             for (i, tile) in tileRegion.enumerated() {
                 let url = tileProvider.url(for: tile)
                 log?("Downloading tile \(i) from \(url)...")
                 group.addTask {
                     // TODO: Are these guaranteed to be PNGs?
-                    (tile, try await HTTPRequest(url: url).fetchPNG())
+                    (tile, try await HTTPRequest(url: url).run())
                 }
             }
 
-            for try await (tile, tileImage) in group {
+            for try await (tile, rawTileImage) in group {
                 ctx.draw(
-                    image: tileImage,
+                    image: try CairoImage(pngData: rawTileImage),
                     at: pixelPosFor(tilePos: TileVec<Double>(tile.pos))
                 )
             }
